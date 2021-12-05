@@ -10,6 +10,8 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <vector>
+#include <string>
 
 using namespace std;
 
@@ -77,6 +79,66 @@ void floyds_alg(long** distance, long num_vertices){
                 Paths[i][j] = min(Paths[i][j], Paths[i][k]+Paths[k][j]);
         } 
     }
+    }
+}
+
+void clean(long** &matrix){
+    //TODO
+}
+
+bool load_File(string fileName, long** &distance){
+    // Create an ifstream object.
+    ifstream input_file(argv[1]);
+    // If it does not exist, print an error message.
+    if (!input_file) {
+        cerr << "Error: Cannot open file '" << argv[1] << "'." << endl;
+        return false;
+    }  
+
+    // Add read errors to the list of exceptions the ifstream will handle.
+    input_file.exceptions(ifstream::badbit);
+    string line;
+    
+
+
+    try {
+        unsigned int line_number = 1;
+        // Use getline to read in a line.
+        // See http://www.cplusplus.com/reference/string/string/getline/
+        if(line_number == 1){
+                istringstream num;
+                int num_vertices;
+                num >> num_vertices;
+
+                if(num_vertices < 1 || num_vertices > 26){
+                    cerr << "Error: Invalid number of vertices '" << line << "' on line 1.";
+                    return false;
+            }
+        }
+
+        while (getline(input_file, line)) {
+            
+
+            vector<string> line_split = split(line, " ");
+            if(line_split.size() != 3){
+                cerr << "Error: Invalid edge data '" << line << "' on line " << line_number << "." << endl;
+                return false;
+            }
+
+            
+
+
+
+            line_number++;
+        }
+        // Don't forget to close the file.
+        input_file.close();
+    } catch (const ifstream::failure &f) {
+        cerr << "Error: An I/O error occurred reading '" << argv[1] << "'.";
+        return false;
+    }
+    return true;
+}
 
 int main(int argc, const char *argv[]) {
     // Make sure the right number of command line arguments exist.
@@ -84,30 +146,14 @@ int main(int argc, const char *argv[]) {
         cerr << "Usage: " << argv[0] << " <filename>" << endl;
         return 1;
     }
-    // Create an ifstream object.
-    ifstream input_file(argv[1]);
-    // If it does not exist, print an error message.
-    if (!input_file) {
-        cerr << "Error: Cannot open file '" << argv[1] << "'." << endl;
+
+    long** distance;
+    bool flag = load_File(argv[1], distance);
+    if(!flag){
+        clean(distance);
         return 1;
-    }
-    // Add read errors to the list of exceptions the ifstream will handle.
-    input_file.exceptions(ifstream::badbit);
-    string line;
-    try {
-        unsigned int line_number = 1;
-        // Use getline to read in a line.
-        // See http://www.cplusplus.com/reference/string/string/getline/
-        while (getline(input_file, line)) {
-            cout << line_number << ":\t" << line << endl;
-            ++line_number;
-        }
-        // Don't forget to close the file.
-        input_file.close();
-    } catch (const ifstream::failure &f) {
-        cerr << "Error: An I/O error occurred reading '" << argv[1] << "'.";
-        return 1;
-    }
+    } //end of error handling
+    
 
     return 0;
 }
