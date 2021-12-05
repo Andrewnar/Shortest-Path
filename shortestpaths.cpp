@@ -156,9 +156,9 @@ vector<string> split(const string& s, const string &delimiter){
   string key;
   vector<string> res;
 
-  while((pos_end = s.find(delimiter, pos_start)) != != string::npos){
+  while((pos_end = s.find(delimiter, pos_start)) != string::npos){
     key = s.substr(pos_start, pos_end - pos_start);
-    pos_start = pos_end + delimiterLen
+    pos_start = pos_end + delimiterLen;
     res.push_back(key);
   }
 
