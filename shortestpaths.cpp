@@ -8,37 +8,39 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
 /** 
  * Displays the matrix on the screen formatted as a table. 
  */ 
-void display_table(long** const matrix, const string &label, 
-                   const bool use_letters = false) { 
-    cout << label << endl; 
-    long max_val = 0; 
-    for (int i = 0; i < num_vertices; i++) { 
-        for (int j = 0; j < num_vertices; j++) { 
-            long cell = matrix[i][j]; 
-            if (cell < INF && cell > max_val) { 
-                max_val = matrix[i][j]; 
-            } 
-        } 
-    } 
- 
-    int max_cell_width = use_letters ? len(max_val) : 
-            len(max(static_cast<long>(num_vertices), max_val)); 
-    cout << ' '; 
-    for (int j = 0; j < num_vertices; j++) { 
-        cout << setw(max_cell_width + 1) << static_cast<char>(j + 'A'); 
-    } 
-    cout << endl; 
-    for (int i = 0; i < num_vertices; i++) { 
+//given print statement
+void display_table(long** const matrix, const string &label, long num_vertices, const bool use_letters = false) {
+	cout << label << endl;
+	long max_val = 0;
+	for (int i = 0; i < num_vertices; i++) {
+		for (int j = 0; j < num_vertices; j++) {
+			long cell = matrix[i][j];
+			if (cell < std::numeric_limits<long>::max() && cell > max_val) {
+				max_val = matrix[i][j];
+			}
+		}
+	}
+    //changed to find the correct max_cell_width by taking the max of the max value or the number of vertices, then turning it
+    //into a string and taking its length
+	int max_cell_width = to_string(max(static_cast<long>(num_vertices - 1), max_val)).length();
+	cout << ' ';
+	for (int j = 0; j < num_vertices; j++) {
+		cout << setw(max_cell_width + 1) << static_cast<char>(j + 'A');
+	}
+	cout << endl;
+	for (int i = 0; i < num_vertices; i++) { 
         cout << static_cast<char>(i + 'A'); 
         for (int j = 0; j < num_vertices; j++) { 
             cout << " " << setw(max_cell_width); 
-            if (matrix[i][j] == INF) { 
+            if (matrix[i][j] == std::numeric_limits<long>::max()) { 
                 cout << "-"; 
             } else if (use_letters) { 
                 cout << static_cast<char>(matrix[i][j] + 'A'); 
@@ -48,8 +50,13 @@ void display_table(long** const matrix, const string &label,
         } 
         cout << endl; 
     } 
-    cout << endl; 
-} 
+    cout << endl;
+}
+
+
+void floyds_alg(long** matrix1, long num_vertices){
+    long** matrix2 = new long*[num_vertices];
+    long** matrix3 = new long*[num_vertices];
 
 int main(int argc, const char *argv[]) {
     // Make sure the right number of command line arguments exist.
