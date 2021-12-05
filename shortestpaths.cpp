@@ -54,9 +54,29 @@ void display_table(long** const matrix, const string &label, long num_vertices, 
 }
 
 
-void floyds_alg(long** matrix1, long num_vertices){
-    long** matrix2 = new long*[num_vertices];
-    long** matrix3 = new long*[num_vertices];
+void floyds_alg(long** distance, long num_vertices){
+    //initiaze path array and distance array
+    long** Paths = new long*[num_vertices];
+    long** verts = new long*[num_vertices];
+    for(int i = 0; i < num_vertices; i++){
+        Paths[i] = new long[num_vertices];
+        verts[i] = new long[num_vertices];
+        //fill distance array with inf
+        for(int j = 0; j < num_vertices; j++){
+            verts[i][j] = std::numeric_limits<long>::max();
+        }
+    }
+    for(int i = 0; i < num_vertices; i++){
+        for(int k = 1; k < num_vertices; k++){
+            [i][k] = 
+        }    
+    }
+    for(int k = 1; k < num_vertices; k++){
+        for(int i = 1; i < num_vertices; i++){
+            for(int j = 1; j < num_vertices; j++){
+                
+        } 
+    }
 
 int main(int argc, const char *argv[]) {
     // Make sure the right number of command line arguments exist.
