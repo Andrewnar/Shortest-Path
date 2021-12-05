@@ -55,7 +55,7 @@ void display_table(long** const matrix, const string &label, long num_vertices, 
 
 
 void floyds_alg(long** distance, long num_vertices){
-    //initiaze path array and distance array
+    //initiaze path array and vertices array for printing
     long** Paths = new long*[num_vertices];
     long** verts = new long*[num_vertices];
     for(int i = 0; i < num_vertices; i++){
@@ -68,13 +68,13 @@ void floyds_alg(long** distance, long num_vertices){
     }
     for(int i = 0; i < num_vertices; i++){
         for(int k = 1; k < num_vertices; k++){
-            [i][k] = 
+            Paths[i][k] = distance[i][k];
         }    
     }
     for(int k = 1; k < num_vertices; k++){
         for(int i = 1; i < num_vertices; i++){
             for(int j = 1; j < num_vertices; j++){
-                
+                Paths[i][j] = min(Paths[i][j], Paths[i][k]+Paths[k][j]);
         } 
     }
 
