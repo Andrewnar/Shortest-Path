@@ -80,8 +80,7 @@ void floyds(long** distance, long num_vertices){
             } 
         }
     }
-<<<<<<< HEAD
-=======
+
     //print all matrices
     display_table(distance, "Distance matrix:", num_vertices, false);
     display_table(Paths, "Path lengths:", num_vertices, false);
@@ -94,7 +93,6 @@ int main(int argc, const char *argv[]) {
     if (argc != 2) {
         cerr << "Usage: " << argv[0] << " <filename>" << endl;
         return 1;
->>>>>>> 627017a81cd3fb57d1b2a33a1132892da3629ab1
     }
 }
 
@@ -104,10 +102,10 @@ void clean(long** &matrix){
 
 bool load_File(string fileName, long** &distance){
     // Create an ifstream object.
-    ifstream input_file(argv[1]);
+    ifstream input_file(fileName);
     // If it does not exist, print an error message.
     if (!input_file) {
-        cerr << "Error: Cannot open file '" << argv[1] << "'." << endl;
+        cerr << "Error: Cannot open file '" << fileName << "'." << endl;
         return false;
     }  
 
@@ -150,7 +148,7 @@ bool load_File(string fileName, long** &distance){
         // Don't forget to close the file.
         input_file.close();
     } catch (const ifstream::failure &f) {
-        cerr << "Error: An I/O error occurred reading '" << argv[1] << "'.";
+        cerr << "Error: An I/O error occurred reading '" << fileName << "'.";
         return false;
     }
     return true;
