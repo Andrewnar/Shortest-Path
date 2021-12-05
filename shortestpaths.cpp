@@ -60,22 +60,26 @@ void display_table(long** const matrix, const string &label, long num_vertices, 
 //to contruct path by bactracking verts
 vector<char> pathhelp(int i, int j, long** verts){
   vector<char> leftPath, rightPath;
-  if(m3[x][y] != '-'){
+  if(verts[x][y] != '-'){
     leftPath = pathhelp(i, verts[i][j], verts);
     rightPath = pathhelp(verts[i][j], j, verts);
     rightPath.insert(rightPath.end(), leftPath.begin()+1, leftPath.end());
     return rightPath;
   }else{
     if(x!=y){
-      leftPath.push_back
+      leftPath.push_back('A'+x);
+      leftPath.push_back('A'+y);
+      return leftPath;
+    }else{
+      leftPath.push_back('A'+x);
+      return leftPath;
     }
   }
 }
 
 void printVerticePairs(long** Paths, long** verts, long num_vertices){
+  vector<char> path;
   for(int i = 0; i<num_vertices; i++){
-    //vector of chars used for storing path
-    vector<char> path;
     //first  char in distance pair
     char first = 'A' + i;
     for(int j = 0; j < num_vertices; j++){
@@ -87,7 +91,19 @@ void printVerticePairs(long** Paths, long** verts, long num_vertices){
         return;
       }
       path = pathhelp(i, j, verts);
+      //since path is constructed by bactracking, you must reverse it
+      reverse(path.begin(), path.end());
 
+      //print path
+      cout << first << " -> " << second << ", distance: ";
+      if(Paths[i][j] == std::numeric_limits<long>::max()){
+        cout << "infinity, path: none";
+      }else{
+        cout << Paths[i][j] << ", path: " << path.at(0);
+        for(int k = 0; k< path.size(); k ++){
+          cout << " -> " << path.at(k);
+        }
+      }
     }
   }
 }
@@ -128,20 +144,14 @@ void floyds(long** distance, long num_vertices){
     printVerticePairs(Paths, verts, num_vertices);
 }
 
-
-int main(int argc, const char *argv[]) {
-    // Make sure the right number of command line arguments exist.
-    if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " <filename>" << endl;
-        return 1;
+void clean(long** &matrix, const int &num_vertices){
+    for(int i = 0; i < num_vertices; i++){
+      delete [] matrix[i];
     }
+    delete [] matrix;
 }
 
-void clean(long** &matrix){
-    //TODO
-}
-
-bool load_File(string fileName, long** &distance){
+bool load_File(string fileName, long** &distance, int num_vertices){
     // Create an ifstream object.
     ifstream input_file(fileName);
     // If it does not exist, print an error message.
@@ -153,8 +163,6 @@ bool load_File(string fileName, long** &distance){
     // Add read errors to the list of exceptions the ifstream will handle.
     input_file.exceptions(ifstream::badbit);
     string line;
-    
-
 
     try {
         unsigned int line_number = 1;
@@ -164,7 +172,6 @@ bool load_File(string fileName, long** &distance){
         getline(input_file, line);
         istringstream ss;
         ss.str (line);
-        int num_vertices;
         ss >> num_vertices;
         ss.clear();
         
@@ -207,10 +214,9 @@ bool load_File(string fileName, long** &distance){
               return false;
             } 
 
-            distance[line_number[0][0] - 'A'][line_number[1][0] - A''
+            distance[line_number[0][0] - 'A'][line_number[1][0] - 'A'] = weight;
             line_number++;
         }
-
         // Don't forget to close the file.
         input_file.close();
         
@@ -229,12 +235,12 @@ int main(int argc, const char *argv[]) {
     }
 
     long** distance;
-    bool flag = load_File(argv[1], distance);
+    int num_vertices;
+    bool flag = load_File(argv[1], distance, num_vertices);
     if(!flag){
         clean(distance);
         return 1;
     } //end of error handling
     
-
     return 0;
 }
