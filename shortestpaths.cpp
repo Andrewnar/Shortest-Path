@@ -17,10 +17,9 @@ using namespace std;
 
 const long INF = numeric_limits<long>::max();
 
-/** 
- * Displays the matrix on the screen formatted as a table. 
- */ 
-//given print statement
+/**
+* Displays the matrix on the screen formatted as a table.
+*/
 void display_table(long** const matrix, const string &label, long num_vertices, const bool use_letters = false) {
 	cout << label << endl;
 	long max_val = 0;
@@ -60,22 +59,21 @@ void display_table(long** const matrix, const string &label, long num_vertices, 
 //to contruct path by bactracking verts
 vector<char> pathhelp(int i, int j, long** verts){
   vector<char> leftPath, rightPath;
-  if(verts[x][y] != '-'){
+  //check if vert[i][j] is equal to INF
+  if(verts[i][j] != INF){
     leftPath = pathhelp(i, verts[i][j], verts);
     rightPath = pathhelp(verts[i][j], j, verts);
     rightPath.insert(rightPath.end(), leftPath.begin()+1, leftPath.end());
     return rightPath;
   }else{
-    if(x!=y){
-      leftPath.push_back('A'+x);
-      leftPath.push_back('A'+y);
-      return leftPath;
-    }else{
-      leftPath.push_back('A'+x);
+      leftPath.push_back('A'+j);
+      if(i != j){
+        leftPath.push_back('A'+i);
+      }
       return leftPath;
     }
   }
-}
+
 
 void printVerticePairs(long** Paths, long** verts, long num_vertices){
   vector<char> path;
@@ -84,25 +82,27 @@ void printVerticePairs(long** Paths, long** verts, long num_vertices){
     char first = 'A' + i;
     for(int j = 0; j < num_vertices; j++){
       //second in pair
-      char second = 'A' + j
+      char second = 'A' + j;
       //if a == b, distacne between them is zero
-      if(first ==second){
+      if(i == j){
         cout << first << " -> " << first << ", distance: 0, path: " << first << endl;
-        return;
-      }
-      path = pathhelp(i, j, verts);
+      }else{
+        path = pathhelp(i, j, verts);
       //since path is constructed by bactracking, you must reverse it
-      reverse(path.begin(), path.end());
+        reverse(path.begin(), path.end());
 
       //print path
-      cout << first << " -> " << second << ", distance: ";
-      if(Paths[i][j] == std::numeric_limits<long>::max()){
-        cout << "infinity, path: none";
-      }else{
-        cout << Paths[i][j] << ", path: " << path.at(0);
-        for(int k = 0; k< path.size(); k ++){
-          cout << " -> " << path.at(k);
+        cout << first << " -> " << second << ", distance: ";
+        if(Paths[i][j] == INF){
+            cout << "infinity, path: none";
+        }else{
+            cout << Paths[i][j] << ", path: " << path.at(0);
+            //k needs to be unsigned int because path.size returns a value with that type
+            for(long unsigned int k = 1; k< path.size(); k ++){
+                cout << " -> " << path.at(k);
+            }
         }
+      cout << endl;
       }
     }
   }
@@ -115,23 +115,23 @@ void floyds(long** distance, long num_vertices){
     for(int i = 0; i < num_vertices; i++){
         Paths[i] = new long[num_vertices];
         verts[i] = new long[num_vertices];
-        //fill distance array with inf
-        for(int j = 0; j < num_vertices; j++){
-            verts[i][j] = std::numeric_limits<long>::max();
-        }
+        //fill array of verticies with dashes
+        fill_n(verts[i], num_vertices, INF);
     }
     for(int i = 0; i < num_vertices; i++){
-        for(int k = 1; k < num_vertices; k++){
+        for(int k = 0; k < num_vertices; k++){
             Paths[i][k] = distance[i][k];
         }    
     }
-    for(int k = 1; k < num_vertices; k++){
-        for(int i = 1; i < num_vertices; i++){
-            for(int j = 1; j < num_vertices; j++){
-                Paths[i][j] = min(Paths[i][j], Paths[i][k]+Paths[k][j]);
-                //only update verts if paths[i][j] is changed
-                if(Paths[i][j] == Paths[i][k]+Paths[k][j]){
-                  verts[i][j] = k;
+    for(int k = 0; k < num_vertices; k++){
+        for(int i = 0; i < num_vertices; i++){
+            for(int j = 0; j < num_vertices; j++){
+                if(Paths[i][k] != INF && Paths[k][j] !=INF){
+                    //only update verts if paths[i][j] is changed
+                    if(Paths[i][j] > Paths[i][k]+Paths[k][j]){
+                        verts[i][j] = k;
+                    }
+                    Paths[i][j] = min(Paths[i][j], Paths[i][k]+Paths[k][j]);
                 }
             } 
         }
@@ -149,6 +149,21 @@ void clean(long** &matrix, const int &num_vertices){
       delete [] matrix[i];
     }
     delete [] matrix;
+}
+
+vector<string> split(const string& s, const string &delimiter){
+  size_t pos_start = 0, pos_end, delimiterLen = delimiter.length();
+  string key;
+  vector<string> res;
+
+  while((pos_end = s.find(delimiter, pos_start)) != != string::npos){
+    key = s.substr(pos_start, pos_end - pos_start);
+    pos_start = pos_end + delimiterLen
+    res.push_back(key);
+  }
+
+  res.push_back(s.substr(pos_start));
+  return res;
 }
 
 bool load_File(string fileName, long** &distance, int num_vertices){
@@ -183,9 +198,9 @@ bool load_File(string fileName, long** &distance, int num_vertices){
 
         //initiaze 2d matrix of distance to INF and diag to 0;
         distance = new long*[num_vertices];
-        for(int i = 0; i < number_vertices; i++){
+        for(int i = 0; i < num_vertices; i++){
           distance[i] = new long[num_vertices];
-          for(int j = 0; j < number_vertices; j++){
+          for(int j = 0; j < num_vertices; j++){
             distance[i][j] = (i == j)? 0 : INF;
           }
         }
