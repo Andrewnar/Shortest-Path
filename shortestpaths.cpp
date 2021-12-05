@@ -54,7 +54,7 @@ void display_table(long** const matrix, const string &label, long num_vertices, 
 }
 
 
-void floyds_alg(long** distance, long num_vertices){
+void floyds(long** distance, long num_vertices){
     //initiaze path array and vertices array for printing
     long** Paths = new long*[num_vertices];
     long** verts = new long*[num_vertices];
@@ -75,8 +75,15 @@ void floyds_alg(long** distance, long num_vertices){
         for(int i = 1; i < num_vertices; i++){
             for(int j = 1; j < num_vertices; j++){
                 Paths[i][j] = min(Paths[i][j], Paths[i][k]+Paths[k][j]);
-        } 
+            } 
+        }
     }
+    //print all matrices
+    display_table(distance, "Distance matrix:", num_vertices, false);
+    display_table(Paths, "Path lengths:", num_vertices, false);
+    display_table(verts, "Intermediate vertices:", num_vertices, true);
+}
+
 
 int main(int argc, const char *argv[]) {
     // Make sure the right number of command line arguments exist.
