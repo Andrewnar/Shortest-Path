@@ -15,6 +15,8 @@
 
 using namespace std;
 
+const long INF = numeric_limits<long>::max();
+
 /** 
  * Displays the matrix on the screen formatted as a table. 
  */ 
@@ -55,6 +57,40 @@ void display_table(long** const matrix, const string &label, long num_vertices, 
     cout << endl;
 }
 
+//to contruct path by bactracking verts
+vector<char> pathhelp(int i, int j, long** verts){
+  vector<char> leftPath, rightPath;
+  if(m3[x][y] != '-'){
+    leftPath = pathhelp(i, verts[i][j], verts);
+    rightPath = pathhelp(verts[i][j], j, verts);
+    rightPath.insert(rightPath.end(), leftPath.begin()+1, leftPath.end());
+    return rightPath;
+  }else{
+    if(x!=y){
+      leftPath.push_back
+    }
+  }
+}
+
+void printVerticePairs(long** Paths, long** verts, long num_vertices){
+  for(int i = 0; i<num_vertices; i++){
+    //vector of chars used for storing path
+    vector<char> path;
+    //first  char in distance pair
+    char first = 'A' + i;
+    for(int j = 0; j < num_vertices; j++){
+      //second in pair
+      char second = "A" + j
+      //if a == b, distacne between them is zero
+      if(first ==second){
+        cout << first << " -> " << first << ", distance: 0, path: " << first << endl;
+        return;
+      }
+      path = pathhelp(i, j, verts);
+
+    }
+  }
+}
 
 void floyds(long** distance, long num_vertices){
     //initiaze path array and vertices array for printing
@@ -77,6 +113,10 @@ void floyds(long** distance, long num_vertices){
         for(int i = 1; i < num_vertices; i++){
             for(int j = 1; j < num_vertices; j++){
                 Paths[i][j] = min(Paths[i][j], Paths[i][k]+Paths[k][j]);
+                //only update verts if paths[i][j] is changed
+                if(Paths[i][j] == Paths[i][k]+Paths[k][j]){
+                  verts[i][j] = k;
+                }
             } 
         }
     }
@@ -85,6 +125,7 @@ void floyds(long** distance, long num_vertices){
     display_table(distance, "Distance matrix:", num_vertices, false);
     display_table(Paths, "Path lengths:", num_vertices, false);
     display_table(verts, "Intermediate vertices:", num_vertices, true);
+    printVerticePairs(Paths, verts, num_vertices);
 }
 
 
@@ -119,34 +160,60 @@ bool load_File(string fileName, long** &distance){
         unsigned int line_number = 1;
         // Use getline to read in a line.
         // See http://www.cplusplus.com/reference/string/string/getline/
-        if(line_number == 1){
-                istringstream num;
-                int num_vertices;
-                num >> num_vertices;
-
-                if(num_vertices < 1 || num_vertices > 26){
-                    cerr << "Error: Invalid number of vertices '" << line << "' on line 1.";
-                    return false;
-            }
+        string line;
+        getline(input_file, line);
+        istringstream ss;
+        ss.str (line);
+        int num_vertices;
+        ss >> num_vertices;
+        ss.clear();
+        
+        if(num_vertices < 1 || num_vertices > 26){
+          cerr << "Error: Invalid number of vertices '" << line << "' on line 1.";
+          return false;        
         }
+        line_number++;
+
+        //initiaze 2d matrix of distance to INF and diag to 0;
+        distance = new long*[num_vertices];
+        for(int i = 0; i < number_vertices; i++){
+          distance[i] = new long[num_vertices];
+          for(int j = 0; j < number_vertices; j++){
+            distance[i][j] = (i == j)? 0 : INF;
+          }
+        }
+        char min_vertex = 'A';
+        char max_vertex = 'A' + num_vertices - 1;
 
         while (getline(input_file, line)) {
-            
-
             vector<string> line_split = split(line, " ");
             if(line_split.size() != 3){
                 cerr << "Error: Invalid edge data '" << line << "' on line " << line_number << "." << endl;
                 return false;
             }
-
+            if(line_split[0][0] < min_vertex || line_split[0][0] > max_vertex) {//may need to check length
+              cerr << "Error: Starting vertex '" << line_split[0] << "' on line " << line_number << " is not among values A-" <<      max_vertex << "." << endl;
+              return false;
+            }
+            if(line_split[1][0] < min_vertex || line_split[1][0] > max_vertex){
+              cerr << "Error: Ending vertex '" << line_split[0] << "' on line " << line_number << " is not among values A-" <<      max_vertex << "." << endl;
+              return false;
+            } 
             
+            int weight;
+            ss.str(line_split[2]);
+            if(!(ss >> edge) || edge <= 0){
+              cerr << "Error: Invalid edge weight '" << line_split[2] << "' on line " << line_number << "." << endl;
+              return false;
+            } 
 
-
-
+            distance[line_number[0][0] - 'A'][line_number[1][0] - A''
             line_number++;
         }
+
         // Don't forget to close the file.
         input_file.close();
+        
     } catch (const ifstream::failure &f) {
         cerr << "Error: An I/O error occurred reading '" << fileName << "'.";
         return false;
