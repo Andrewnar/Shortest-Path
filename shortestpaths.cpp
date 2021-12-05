@@ -84,7 +84,7 @@ void printVerticePairs(long** Paths, long** verts, long num_vertices){
     char first = 'A' + i;
     for(int j = 0; j < num_vertices; j++){
       //second in pair
-      char second = "A" + j
+      char second = 'A' + j
       //if a == b, distacne between them is zero
       if(first ==second){
         cout << first << " -> " << first << ", distance: 0, path: " << first << endl;
@@ -209,12 +209,12 @@ bool load_File(string fileName, long** &distance, int num_vertices){
             
             int weight;
             ss.str(line_split[2]);
-            if(!(ss >> edge) || edge <= 0){
+            if(!(ss >> weight) || weight <= 0){
               cerr << "Error: Invalid edge weight '" << line_split[2] << "' on line " << line_number << "." << endl;
               return false;
             } 
 
-            distance[line_number[0][0] - 'A'][line_number[1][0] - 'A'] = weight;
+            distance[line_split[0][0] - 'A'][line_split[1][0] - 'A'] = weight;
             line_number++;
         }
         // Don't forget to close the file.
@@ -238,7 +238,7 @@ int main(int argc, const char *argv[]) {
     int num_vertices;
     bool flag = load_File(argv[1], distance, num_vertices);
     if(!flag){
-        clean(distance);
+        clean(distance, num_vertices);
         return 1;
     } //end of error handling
     
